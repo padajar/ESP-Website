@@ -1,7 +1,7 @@
 /*
  * ConnectCode
  *
- * Copyright (c) 2010-2011 barcoderesource.com (http://barcoderesource.com/gpl-3.0.txt)
+ * Copyright (c) 2010-2011 barcoderesource.com (http://barcoderesouce.com/gpl-3.0.txt)
  * Licensed under the GPL (gpl-3.0.txt) licenses.
  *
  * http://www.barcoderesource.com
@@ -72,7 +72,7 @@
 			  if (textStyle==undefined)
 				textStyle="";
 			  if (barWidthRatio==undefined)
-				barWidthRatio=3;
+				barWidthRatio=3;			  
 			  if (height==undefined)
 				height=1;
 			  else if (height<=0 || height >15)
@@ -94,7 +94,7 @@
 			  else if (humanReadable!="yes" && humanReadable !="no")
 				humanReadable="yes";
 
-			  var encodedData=EncodeCode39(data,checkDigit);
+			  var encodedData=EncodeCode39(data,checkDigit);	
                     var humanReadableText = ConnectCode_Encode_Code39(data,checkDigit);
   		        var encodedLength = 0;
                     var thinLength = 0;
@@ -110,7 +110,7 @@
                     }
                     else
                         barWidthRatio = 3;
-               var x;
+                    var x;
                     for (x = 0; x < encodedData.length; x++)
                     {
                         if (encodedData.substr(x,1) == 't')
@@ -138,7 +138,7 @@
                     {
                         thickWidth = barWidth * barWidthRatio;
                     }
-
+	
 			  if (mode=="html")
 			  {
 				  if (textAlignment=='center')
@@ -158,7 +158,7 @@
 				  }
 				  result=result+humanSpan;
 			  }
-
+			        var x;
                     for (x = 0; x < encodedData.length; x++)
                     {
                         var brush;
@@ -174,7 +174,7 @@
 					     +'<span style="border-left:'
 					     +barWidth
 					     +units
-					     +' solid '
+					     +' solid ' 
 					     +brush
 					     +';height:'
 					     +height
@@ -187,7 +187,7 @@
 				    result=result
 					     +'<span style="border-left :'
 					     +thickWidth
-					     +units+' solid '
+					     +units+' solid ' 
 					     +brush
 					     +';height:'
 					     +height
@@ -213,9 +213,9 @@
 				  }
 				  result=result+humanSpan+"</div>";
 			  }
-			  return result;
+			  return result;	
 		}
-
+        
             function EncodeCode39(data,checkDigit)
             {
                 var fontOutput = ConnectCode_Encode_Code39(data,checkDigit);
@@ -387,8 +387,8 @@
 					filtereddata = filtereddata.substr(0,255);
 				}
 			}
-			Result = "(ID: " + filtereddata+cd+")";
-  		      Result=html_decode(html_escape(Result));
+			Result = "*" + filtereddata+cd+"*";
+  		      Result=html_decode(html_escape(Result));	
 			return Result;
 		}
 
