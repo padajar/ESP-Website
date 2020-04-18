@@ -258,6 +258,7 @@ INSTALLED_APPS = (
     'filebrowser',
     'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.admindocs',
+    'easy_timezones',
 )
 
 import os
