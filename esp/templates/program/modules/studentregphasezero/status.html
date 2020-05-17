@@ -14,6 +14,34 @@
   width: 100%;
   height: 250px;
 }
+
+#applicants
+{
+    list-style-type: none;
+    counter-reset: section;
+
+    -moz-column-count: 3;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 3;
+    -webkit-column-gap: 20px;
+    column-count: 3;
+    column-gap: 20px;
+    margin: 0px;
+}
+
+#record
+{
+    padding-left: 30px;
+    position: relative;
+}
+
+#lotteryentries{
+  display:none;
+}
+#lotteryentries.show{
+  display:block;
+}
+
 table {
     border-collapse: collapse;
 }
@@ -45,12 +73,12 @@ td {
 </center>
 
 <center>
+<hr>
 {% if error %}<p><font color="red">{{ error }}</font></p>{% endif %}
 {% autoescape off %}
 {% if lottery_messages %}<p><font color="blue">{{ lottery_messages|join:"<br/>" }}</font></p>{% endif %}
 {% endautoescape %}
 
-<hr>
 <button class="dsphead">
     <b><u>Run Default Student Lottery Algorithm:</u></b>
 </button>
@@ -131,7 +159,5 @@ td {
     {% endfor %}
 </table>
 {% endif %}
-
 <script type="text/javascript" src="/media/scripts/expand_display.js"></script>
-
 {% endblock %}

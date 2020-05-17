@@ -6,21 +6,17 @@ __copyright__ = """
 This file is part of the ESP Web Site
 Copyright (c) 2013 by the individual contributors
   (see AUTHORS file)
-
 The ESP Web Site is free software; you can redistribute it and/or
 modify it under the terms of the GNU Affero General Public License
 as published by the Free Software Foundation; either version 3
 of the License, or (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
-
 You should have received a copy of the GNU Affero General Public
 License along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
 Contact information:
 MIT Educational Studies Program
   84 Massachusetts Ave W20-467, Cambridge, MA 02139
@@ -62,6 +58,7 @@ class StudentRegPhaseZeroManage(ProgramModuleObj):
     def lottery(self, prog, role, post):
         messages = []
         winners, _ = Group.objects.get_or_create(name=role)
+        students = []
 
         if post.get('mode') == 'default':
             # Get grade caps
@@ -84,15 +81,15 @@ class StudentRegPhaseZeroManage(ProgramModuleObj):
                     cpass = not any(newcounts[c] > grade_caps[c] for c in counts)
 
                     if cpass:
-                        winners.user_set.add(*sibs)
+                        students.extend(sibs)
                         counts = newcounts
             else:
                 messages.append("<i>program_size_by_grade</i> <a href='/manage/" + prog.getUrlBase() + "/tags'>tag</a> is not set. Lottery not run.")
-                return messages
 
         elif post.get('mode') == 'manual':
             usernames = filter(None, re.split(r'[;,\s]\s*', post.get('usernames')))
 
+            #check that all usernames are valid
             for username in usernames:
                 try:
                     student = ESPUser.objects.get(username=username)
@@ -100,27 +97,30 @@ class StudentRegPhaseZeroManage(ProgramModuleObj):
                     messages.append("Could not find a user with username " + username)
                     continue
                 if student.isStudent():
-                    if post.get('groups'):
-                        records = PhaseZeroRecord.objects.filter(program=prog, user=student).order_by('time')
-                        if records.count() > 0:
-                            group_members = records[0].user.all()
-                            winners.user_set.add(*group_members)
+                    records = PhaseZeroRecord.objects.filter(program=prog, user=student).order_by('time')
+                    if records.count() > 0:
+                        if post.get('groups'):
+                            students.extend(records[0].user.all())
+                        else:
+                            students.append(student)
                     else:
-                        winners.user_set.add(student)
+                        messages.append(username + " is not in the lottery")
                 else:
-                    messages.append(username + "is not a student")
+                    messages.append(username + " is not a student")
 
         ###############################################################################
         # Post lottery, assign permissions to people in the lottery winners group
         # Assign OverridePhaseZero permission and Student/All permissions
-
-        override_perm = Permission(permission_type='OverridePhaseZero', role=winners, start_date=datetime.datetime.now(), program=prog)
-        studentAll_perm = Permission(permission_type='Student/All', role=winners, start_date=datetime.datetime.now(), program=prog)
-        override_perm.save()
-        studentAll_perm.save()
-        # Add tag to indicate student lottery has been run
-        Tag.setTag('student_lottery_run', target=prog, value='True')
-        messages.append("The student lottery has been run successfully")
+        if len(messages) == 0:
+            #Add users to winners group once we are sure there were no problems
+            winners.user_set.add(*students)
+            override_perm = Permission(permission_type='OverridePhaseZero', role=winners, start_date=datetime.datetime.now(), program=prog)
+            studentAll_perm = Permission(permission_type='Student/All', role=winners, start_date=datetime.datetime.now(), program=prog)
+            override_perm.save()
+            studentAll_perm.save()
+            # Add tag to indicate student lottery has been run
+            Tag.setTag('student_lottery_run', target=prog, value='True')
+            messages.append("The student lottery has been run successfully")
 
         return messages
 
