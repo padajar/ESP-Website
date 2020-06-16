@@ -53,6 +53,7 @@ class StudentRegPhaseZeroManage(ProgramModuleObj):
             'required': False,
             'admin_title': 'Manage Student Registration Phase Zero',
             'link_title': 'Manage Phase Zero',
+            'choosable': 0,
         }
 
     def lottery(self, prog, role, post):
